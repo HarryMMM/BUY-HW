@@ -5,12 +5,12 @@ import time
 from threading import Thread
 
 ACCOUNTS = {
-    "username": "password"
+    "15664886029": "5211314hh"
 }
-chrome_driver = "D:\chromedriver.exe"   # Win32_76.0.3809.126
+chrome_driver = "D:\\chromedriver_win32\\chromedriver.exe"  # Win32_76.0.3809.126
 
 # Mate 20 X(5G)
-BUY_URL = 'https://www.vmall.com/product/10086533947561.html'
+BUY_URL = 'https://www.vmall.com/product/10086726905036.html'
 # 测试P30 Pro
 # BUY_URL = 'https://www.vmall.com/product/10086951150635.html'
 # 登录url
@@ -18,7 +18,7 @@ LOGIN_URL = 'https://hwid1.vmall.com/CAS/portal/login.html?validated=true&themeN
 # 登录成功手动确认URL
 LOGIN_SUCCESS_CONFIRM = 'https://www.vmall.com/'
 # 开始自动刷新等待抢购按钮出现的时间点,提前3分钟
-BEGIN_GO = '2019-08-16 10:08:00'
+BEGIN_GO = '2021-01-16 10:08:00'
 
 
 # 进到购买页面后提交订单
@@ -78,19 +78,35 @@ def goToBuy(driver, user):
     over = False
     while True:
         if time.time() > timestamp:  # 到了抢购时间
-            button = driver.find_elements_by_xpath('//*[@id="pro-operation"]/a')
-            text = driver.find_elements_by_xpath('//*[@id="pro-operation"]/a/span')[0].text
+            button = driver.find_elements_by_xpath('//*[@id="pro-operation"]/a')[0]
+            xpath = driver.find_elements_by_xpath('//*[@id="pro-operation"]/a/span')
+            if len(xpath):
+                text = xpath[0].text
+            else:
+                text = button.text
             if text == '已售完':
                 over = True
+                print(user + text)
                 break
             if text == '立即申购' and button.get_attribute('class') != 'product-button02 disabled':
-            # buyButton = driver.find_element_by_link_text('立即申购')
+                # buyButton = driver.find_element_by_link_text('立即申购')
                 print(user + '立即申购按钮出现了！！！')
                 button.click()
                 print(user + '立即申购')
                 break
             time.sleep(0.2)
         else:
+            button = driver.find_elements_by_xpath('//*[@id="pro-operation"]/a')[0]
+            xpath = driver.find_elements_by_xpath('//*[@id="pro-operation"]/a/span')
+            if len(xpath):
+                text = xpath[0].text
+            else:
+                text = button.text
+            #  如果未到抢购时间，但是是提前登陆状态，则先点击提前登陆
+            if text == '提前登录':
+                button.click()
+                print(user + text)
+                time.sleep(3)
             time.sleep(15)
             print(user + '睡眠15s，未到脚本开启时间：' + BEGIN_GO)
     if over:
@@ -106,10 +122,12 @@ def loginMall(user, pwd):
     driver.get(LOGIN_URL)
     try:
         time.sleep(5)  # 等待页面加载完成
-        account = driver.find_element_by_xpath('//*[@id="login_userName"]')
+        account = driver.find_element_by_xpath(
+            '/html/body/div[1]/div[2]/div/div/div[1]/div[3]/span[3]/div[1]/span/div[3]/div[1]/div/div/input')
         account.send_keys(user)
         time.sleep(1)
-        password = driver.find_element_by_xpath('//*[@id="login_password"]')
+        password = driver.find_element_by_xpath(
+            '/html/body/div[1]/div[2]/div/div/div[1]/div[3]/span[3]/div[1]/span/div[4]/div/div/div/input')
         password.send_keys(pwd)
         print(user + '输入了账号密码，等待手动登录')
     except:
