@@ -18,7 +18,10 @@ LOGIN_URL = 'https://hwid1.vmall.com/CAS/portal/login.html?validated=true&themeN
 # 登录成功手动确认URL
 LOGIN_SUCCESS_CONFIRM = 'https://www.vmall.com/'
 # 开始自动刷新等待抢购按钮出现的时间点,提前3分钟
-BEGIN_GO = '2021-01-16 10:08:00'
+BEGIN_GO = '2021-01-16 09:55:00'
+
+
+# BEGIN_GO = '2021-01-16 10:08:00'
 
 
 # 进到购买页面后提交订单
@@ -77,7 +80,7 @@ def goToBuy(driver, user):
     # 结束标志位
     over = False
     while True:
-        if time.time() > timestamp:  # 到了抢购时间
+        if time.time() >= timestamp:  # 到了抢购时间
             button = driver.find_elements_by_xpath('//*[@id="pro-operation"]/a')[0]
             xpath = driver.find_elements_by_xpath('//*[@id="pro-operation"]/a/span')
             if len(xpath):
@@ -107,8 +110,11 @@ def goToBuy(driver, user):
                 button.click()
                 print(user + text)
                 time.sleep(3)
-            time.sleep(15)
-            print(user + '睡眠15s，未到脚本开启时间：' + BEGIN_GO)
+            if timestamp - time.time() >= 2:
+                time.sleep(1)
+                print(user + '睡眠1s，未到脚本开启时间：' + BEGIN_GO + '，还有' + str(timestamp - time.time()) + '开始')
+            else:
+                print(user + '还有2秒开始抢购，起来嗨~')
     if over:
         print("很遗憾，抢购结束。。。")
         exit(0)
