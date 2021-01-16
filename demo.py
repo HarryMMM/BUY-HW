@@ -18,10 +18,7 @@ LOGIN_URL = 'https://hwid1.vmall.com/CAS/portal/login.html?validated=true&themeN
 # 登录成功手动确认URL
 LOGIN_SUCCESS_CONFIRM = 'https://www.vmall.com/'
 # 开始自动刷新等待抢购按钮出现的时间点,提前3分钟
-BEGIN_GO = '2021-01-16 09:55:00'
-
-
-# BEGIN_GO = '2021-01-16 10:08:00'
+BEGIN_GO = '2021-01-17 10:08:00'
 
 
 # 进到购买页面后提交订单
