@@ -18,7 +18,7 @@ LOGIN_URL = 'https://hwid1.vmall.com/CAS/portal/login.html?validated=true&themeN
 # 登录成功手动确认URL
 LOGIN_SUCCESS_CONFIRM = 'https://www.vmall.com/'
 # 开始自动刷新等待抢购按钮出现的时间点,提前3分钟
-BEGIN_GO = '2021-01-17 10:08:00'
+BEGIN_GO = '2021-01-22 10:08:00'
 
 
 # 进到购买页面后提交订单
@@ -50,10 +50,12 @@ def onQueue(driver, user):
     nowUrl = driver.current_url
     while True:
         try:
+            # 如果有返回活动页面并且可用则表示失败了，需要跳转回购买页面
             errorbutton = driver.find_element_by_link_text('返回活动页面')  # 出现这个一般是失败了。。
             if errorbutton.is_enabled():
                 print(user + "：出现返回活动页面，可能抢购失败。。。")
-                errorbutton.click()
+                goToBuy(driver, user)
+
             pass
         except:
             print(user + ':排队中')
@@ -62,8 +64,6 @@ def onQueue(driver, user):
         if nowUrl != driver.current_url and nowUrl != BUY_URL:
             print(user + ':排队页面跳转了!!!!!!!!!!!!!!')
             break
-        else:
-            goToBuy(driver, user)
     submitOrder(driver, user)
 
 
@@ -94,6 +94,9 @@ def goToBuy(driver, user):
                 button.click()
                 print(user + '立即申购')
                 break
+            else:
+                qirihuyang = driver.find_element_by_xpath('//*[@id="pro-skus"]/dl[1]/div/ul/li[5]')
+                qirihuyang.click()
             time.sleep(0.2)
         else:
             button = driver.find_elements_by_xpath('//*[@id="pro-operation"]/a')[0]
@@ -105,6 +108,8 @@ def goToBuy(driver, user):
             #  如果未到抢购时间，但是是提前登陆状态，则先点击提前登陆
             if text == '提前登录':
                 button.click()
+                qirihuyang = driver.find_element_by_xpath('//*[@id="pro-skus"]/dl[1]/div/ul/li[5]')
+                qirihuyang.click()
                 print(user + text)
                 time.sleep(3)
             if timestamp - time.time() >= 2:
