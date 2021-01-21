@@ -47,7 +47,7 @@ def submitOrder(driver, user):
 # 排队中
 def onQueue(driver, user):
     time.sleep(1)
-    nowUrl = driver.current_url
+    onQueueUrl = driver.current_url
     while True:
         try:
             # 如果有返回活动页面并且可用则表示失败了，需要跳转回购买页面
@@ -58,12 +58,15 @@ def onQueue(driver, user):
 
             pass
         except:
+            # 异常表示没有返回活动页面
             print(user + ':排队中')
             time.sleep(0.3)  # 排队中
             pass
-        if nowUrl != driver.current_url and nowUrl != BUY_URL:
+        # 如果当前不是排队页面 并且 也不是购买页面，则可能是跳转到了订单页面，跳出循环，执行订单逻辑
+        if onQueueUrl != driver.current_url and driver.current_url != BUY_URL:
             print(user + ':排队页面跳转了!!!!!!!!!!!!!!')
             break
+    # 进入订单页面
     submitOrder(driver, user)
 
 
@@ -121,6 +124,7 @@ def goToBuy(driver, user):
         print("很遗憾，抢购结束。。。")
         exit(0)
     else:
+        # 进入排队页面
         onQueue(driver, user)
 
 
