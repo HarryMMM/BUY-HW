@@ -121,7 +121,8 @@ def goToBuy(driver, user):
                 time.sleep(3)
             if timestamp - time.time() >= 2:
                 time.sleep(1)
-                print(user + '睡眠1s，未到脚本开启时间：' + BEGIN_GO + '，还有' + str(timestamp - time.time()) + '开始')
+                print(user + '睡眠1s，未到脚本开启时间：' + datetime.datetime.strftime(BEGIN_GO, '%Y-%m-%d %H:%M:%S') + '，还有' + str(
+                    timestamp - time.time()) + '开始')
             else:
                 print(user + '还有2秒开始抢购，起来嗨~')
     if over:
