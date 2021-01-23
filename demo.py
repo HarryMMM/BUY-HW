@@ -2,6 +2,7 @@
 
 from selenium import webdriver
 import time
+import datetime
 from threading import Thread
 
 ACCOUNTS = {
@@ -17,8 +18,12 @@ BUY_URL = 'https://www.vmall.com/product/10086726905036.html'
 LOGIN_URL = 'https://hwid1.vmall.com/CAS/portal/login.html?validated=true&themeName=red&service=https%3A%2F%2Fwww.vmall.com%2Faccount%2Facaslogin%3Furl%3Dhttps%253A%252F%252Fwww.vmall.com%252F&loginChannel=26000000&reqClientType=26&lang=zh-cn'
 # 登录成功手动确认URL
 LOGIN_SUCCESS_CONFIRM = 'https://www.vmall.com/'
+
 # 开始自动刷新等待抢购按钮出现的时间点,提前3分钟
-BEGIN_GO = '2021-01-22 10:08:00'
+# BEGIN_GO = '2021-01-23 10:08:00'
+# 计算出今天10:08:00的时间
+BEGIN_GO = datetime.datetime.combine(datetime.datetime.today(), datetime.datetime.min.time()) + datetime.timedelta(
+    hours=10) + datetime.timedelta(minutes=8)
 
 
 # 进到购买页面后提交订单
@@ -51,7 +56,7 @@ def onQueue(driver, user):
     while True:
         try:
             # 如果有返回活动页面并且可用则表示失败了，需要跳转回购买页面
-            errorbutton = driver.find_element_by_link_text('返回活动页面')  # 出现这个一般是失败了。。
+            errorbutton = driver.find_element_by_link_text('返回活动')  # 出现这个一般是失败了。。
             if errorbutton.is_enabled():
                 print(user + "：出现返回活动页面，可能抢购失败。。。")
                 goToBuy(driver, user)
@@ -75,8 +80,7 @@ def goToBuy(driver, user):
     driver.get(BUY_URL)
     print(user + '打开购买页面')
     # 转换成抢购时间戳
-    timeArray = time.strptime(BEGIN_GO, "%Y-%m-%d %H:%M:%S")
-    timestamp = time.mktime(timeArray)
+    timestamp = datetime.datetime.timestamp(BEGIN_GO)
     # 结束标志位
     over = False
     while True:
